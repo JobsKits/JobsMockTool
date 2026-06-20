@@ -1,0 +1,16 @@
+# Python 本地环境与缓存
+.venv/
+__pycache__/
+*.py[cod]
+
+# PyInstaller 构建目录（Windows / macOS）
+/build/
+/dist/
+
+# 脱离构建目录生成的平台安装包
+*.exe
+*.app/
+*.dmg
+
+# macOS 系统文件
+.DS_Store
