@@ -1,20 +1,22 @@
 #!/bin/zsh
-setopt NO_NOMATCH
-set -euo pipefail
+# 脚本自述：
+# - 脚本名称：build_macos.command
+# - 核心用途：执行“build_macos”对应的自动化任务。
+# - 影响范围：可能修改当前项目、用户环境或脚本指定的目标。
+# - 运行提示：运行后会先打印内置自述；终端模式按回车确认后继续，按 Ctrl+C 可取消。
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
+PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd -P)"
 SCRIPT_BASENAME=$(basename "$0" | sed 's/\.[^.]*$//')
 LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"
-: > "$LOG_FILE"
 
-VENV_DIR="${SCRIPT_DIR}/.venv"
-BUILD_DIR="${SCRIPT_DIR}/build"
-DIST_DIR="${SCRIPT_DIR}/dist"
+VENV_DIR="${PROJECT_ROOT}/.venv"
+BUILD_DIR="${PROJECT_ROOT}/build"
+DIST_DIR="${PROJECT_ROOT}/dist"
 APP_BUNDLE="${DIST_DIR}/JobsMockTool.app"
 DMG_PATH="${DIST_DIR}/JobsMockTool-Installer.dmg"
 DMG_STAGING="${DIST_DIR}/dmg_staging"
-
 # 按当前输出级别记录终端信息，并同步写入脚本日志。
 log()            { echo -e "$1" | tee -a "$LOG_FILE"; }
 # 按当前输出级别记录终端信息，并同步写入脚本日志。
@@ -43,16 +45,20 @@ gray_echo()      { log "\033[0;90m$1\033[0m"; }
 bold_echo()      { log "\033[1m$1\033[0m"; }
 # 按当前输出级别记录终端信息，并同步写入脚本日志。
 underline_echo() { log "\033[4m$1\033[0m"; }
-
 # 同步显示命令输出并写入日志，失败状态由 pipefail 原样向上返回。
 run_logged() {
   "$@" 2>&1 | tee -a "$LOG_FILE"
 }
-
 # 优先展示仓库 README；缺失时输出脚本内置说明，避免双击误触。
 show_readme_and_wait() {
   local readme_path="${SCRIPT_DIR}/README.md"
   clear
+  print -r -- '============================== 脚本内置自述 =============================='
+  print -r -- '脚本名称：build_macos.command'
+  print -r -- '核心用途：执行“build_macos”对应的自动化任务。'
+  print -r -- '影响范围：可能修改当前项目、用户环境或脚本指定的目标。'
+  print -r -- '取消方式：确认前按 Ctrl+C 终止，不会继续执行后续业务。'
+  print -r -- '============================================================================'
   if [[ -f "$readme_path" ]]; then
     highlight_echo "============================== README.md =============================="
     cat "$readme_path" | tee -a "$LOG_FILE"
@@ -66,7 +72,6 @@ show_readme_and_wait() {
   echo ""
   read -r "?👉 已阅读自述文件，按回车继续；按 Ctrl+C 取消：" _
 }
-
 # 普通升级动作默认跳过，只有输入任意字符后才执行。
 ask_any_to_run() {
   local message="$1"
@@ -74,7 +79,6 @@ ask_any_to_run() {
   read -r "?${message}（直接回车跳过；输入任意字符后回车执行）：" answer
   [[ -n "$answer" ]]
 }
-
 # 清理旧产物属于破坏性动作，必须输入 YES 才允许继续。
 confirm_yes() {
   echo ""
@@ -84,7 +88,6 @@ confirm_yes() {
   IFS= read -r "input?➤ "
   [[ "$input" == "YES" ]]
 }
-
 # 检查 macOS、系统工具和项目输入文件，失败时给出明确目标。
 check_environment() {
   if [[ "$(uname -s)" != "Darwin" ]]; then
@@ -102,17 +105,16 @@ check_environment() {
 
   local required_file=""
   for required_file in app.py requirements.txt; do
-    if [[ ! -f "${SCRIPT_DIR}/${required_file}" ]]; then
-      error_echo "缺少项目文件：${SCRIPT_DIR}/${required_file}"
+    if [[ ! -f "${PROJECT_ROOT}/${required_file}" ]]; then
+      error_echo "缺少项目文件：${PROJECT_ROOT}/${required_file}"
       return 1
     fi
   done
 
   info_echo "Python：$(python3 --version 2>&1)"
-  info_echo "项目目录：${SCRIPT_DIR}"
+  info_echo "项目目录：${PROJECT_ROOT}"
   info_echo "日志文件：${LOG_FILE}"
 }
-
 # 创建项目虚拟环境，并按需升级 pip 后安装构建依赖。
 prepare_python_environment() {
   info_echo "创建 / 复用虚拟环境：${VENV_DIR}"
@@ -127,9 +129,8 @@ prepare_python_environment() {
   fi
 
   info_echo "安装 requirements.txt 中的构建依赖"
-  run_logged python -m pip install -r "${SCRIPT_DIR}/requirements.txt"
+  run_logged python -m pip install -r "${PROJECT_ROOT}/requirements.txt"
 }
-
 # 清理两端共用的 PyInstaller 构建目录，避免旧文件污染本次产物。
 clean_build_outputs() {
   if ! confirm_yes "即将删除旧构建目录：${BUILD_DIR} 和 ${DIST_DIR}"; then
@@ -140,7 +141,6 @@ clean_build_outputs() {
   info_echo "清理旧构建产物"
   rm -rf -- "$BUILD_DIR" "$DIST_DIR"
 }
-
 # 使用 PyInstaller 生成 macOS App Bundle。
 build_macos_app() {
   info_echo "开始构建 macOS App；QtWebEngine 体积较大，请耐心等待。"
@@ -152,7 +152,7 @@ build_macos_app() {
     --name "JobsMockTool" \
     --osx-bundle-identifier "com.jobs.mocktool" \
     --collect-all PySide6 \
-    "${SCRIPT_DIR}/app.py"
+    "${PROJECT_ROOT}/app.py"
 
   if [[ ! -d "$APP_BUNDLE" ]]; then
     error_echo "未找到 App Bundle：${APP_BUNDLE}"
@@ -160,7 +160,6 @@ build_macos_app() {
   fi
   success_echo "macOS App 构建完成：${APP_BUNDLE}"
 }
-
 # 生成带 Applications 快捷入口的拖拽安装 DMG。
 build_dmg_installer() {
   info_echo "准备 DMG 临时目录：${DMG_STAGING}"
@@ -180,7 +179,6 @@ build_dmg_installer() {
   rm -rf -- "$DMG_STAGING"
   success_echo "macOS DMG 构建完成：${DMG_PATH}"
 }
-
 # 汇总输出产物、Gatekeeper 提示和排查日志位置。
 show_build_result() {
   echo ""
@@ -191,23 +189,38 @@ show_build_result() {
   info_echo "完整日志：${LOG_FILE}"
   highlight_echo "========================================================================"
 }
-
-# 编排构建流程，依次完成说明、检查、准备、构建和结果展示。
-run_main_flow() {
-  cd "$SCRIPT_DIR"
-  show_readme_and_wait
-  check_environment
-  prepare_python_environment
-  clean_build_outputs
-  build_macos_app
-  build_dmg_installer
-  show_build_result
+# 编排脚本的高层业务流程。
+# 切换到 Mock 工具项目根目录。
+change_to_project_root() {
+  cd "$PROJECT_ROOT"
 }
-
-# 统一收口脚本入口，仅委托已经拆分完成的业务流程。
+# 编排脚本的高层业务流程。
+# 初始化脚本运行环境，并集中承载原有的顶层执行逻辑。
+initialize_script_runtime() {
+  setopt NO_NOMATCH
+  set -euo pipefail
+  : > "$LOG_FILE"
+}
+# 编排脚本的高层业务流程。
 main() {
-  # 调用完整构建流程：主入口不直接承载目录切换和多步骤业务逻辑。
-  run_main_flow "$@"
+  # 展示脚本说明并等待用户确认影响范围。
+  show_readme_and_wait
+  # 初始化 Shell 选项、日志、依赖和入口运行状态。
+  initialize_script_runtime
+  # 切换到 Mock 工具项目根目录。
+  change_to_project_root
+  # 检查当前步骤所需的环境、路径或输入条件。
+  check_environment
+  # 准备后续业务需要的配置、目录或运行上下文。
+  prepare_python_environment
+  # 清理本次流程产生的临时内容或指定缓存。
+  clean_build_outputs
+  # 执行当前流程中的独立业务步骤：build_macos_app。
+  build_macos_app
+  # 执行安装步骤，并保留命令失败信息供后续排查。
+  build_dmg_installer
+  # 执行当前流程中的独立业务步骤：show_build_result。
+  show_build_result
 }
 
 main "$@"
