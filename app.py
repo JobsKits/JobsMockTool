@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import copy
 import json
+import sys
 import threading
 from datetime import datetime
 import traceback
@@ -18,9 +19,10 @@ import urllib.request
 import uuid
 from dataclasses import dataclass, field
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from PySide6.QtCore import QObject, Qt, QTimer, QUrl, Signal
+from PySide6.QtCore import QEvent, QObject, Qt, QTimer, QUrl, Signal
 from PySide6.QtGui import QAction, QCloseEvent, QIcon
 from PySide6.QtWidgets import (
     QApplication,
@@ -792,6 +794,7 @@ class JobsMockTool(QMainWindow):
         self.server_threads: Dict[int, threading.Thread] = {}
         self._loading = False
         self.location_text = "自动识别中..."
+        self._quitting = False
         self.location_bridge = LocationSignalBridge()
         self.location_bridge.location_ready.connect(self._on_location_ready)
 
@@ -806,7 +809,7 @@ class JobsMockTool(QMainWindow):
         if not QSystemTrayIcon.isSystemTrayAvailable():
             return
 
-        icon = QIcon("icon.png")
+        icon = QIcon(str(self._resource_path("icon.png")))
         if icon.isNull():
             icon = self.style().standardIcon(QStyle.StandardPixmap.SP_ComputerIcon)
         self.setWindowIcon(icon)
@@ -826,6 +829,20 @@ class JobsMockTool(QMainWindow):
         self.tray_icon.activated.connect(self._on_system_tray_activated)
         self.tray_icon.show()
 
+    @staticmethod
+    def _resource_path(name: str) -> Path:
+        bundle_root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
+        return bundle_root / name
+
+    def _hide_to_system_tray(self) -> None:
+        if self.tray_icon is not None and self.tray_icon.isVisible():
+            self.hide()
+
+    def changeEvent(self, event: QEvent) -> None:  # noqa: N802
+        super().changeEvent(event)
+        if event.type() == QEvent.Type.WindowStateChange and self.isMinimized():
+            QTimer.singleShot(0, self._hide_to_system_tray)
+
     def _restore_from_system_tray(self) -> None:
         self.showNormal()
         self.raise_()
@@ -842,7 +859,10 @@ class JobsMockTool(QMainWindow):
             self._restore_from_system_tray()
 
     def _quit_from_system_tray(self) -> None:
+        self._quitting = True
         self._stop_servers()
+        if self.tray_icon is not None:
+            self.tray_icon.hide()
         QApplication.quit()
 
     def _start_header_clock(self) -> None:
@@ -1905,10 +1925,13 @@ class JobsMockTool(QMainWindow):
             return body_text
 
     def closeEvent(self, event: QCloseEvent) -> None:  # noqa: N802
+        if self._quitting:
+            event.accept()
+            return
         choice = QMessageBox.question(
             self,
             "关闭 JobsMockTool",
-            "是否最小化到任务栏并继续运行？\n\n选择“否”将停止本地 Mock 服务并退出程序。",
+            "是否驻留到顶部菜单栏并继续运行？\n\n选择“否”将停止本地 Mock 服务并退出程序。",
             QMessageBox.StandardButton.Yes
             | QMessageBox.StandardButton.No
             | QMessageBox.StandardButton.Cancel,
@@ -1917,13 +1940,13 @@ class JobsMockTool(QMainWindow):
         if choice == QMessageBox.StandardButton.Yes:
             event.ignore()
             if self.tray_icon is not None and self.tray_icon.isVisible():
-                self.hide()
+                self._hide_to_system_tray()
             else:
                 self.showMinimized()
             return
         if choice == QMessageBox.StandardButton.No:
-            self._stop_servers()
-            event.accept()
+            event.ignore()
+            QTimer.singleShot(0, self._quit_from_system_tray)
             return
         event.ignore()
 
@@ -2106,6 +2129,7 @@ QSplitter::handle {
 
 def main() -> None:
     app = QApplication([])
+    app.setQuitOnLastWindowClosed(False)
     window = JobsMockTool()
     window.show()
     app.exec()

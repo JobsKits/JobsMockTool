@@ -151,6 +151,7 @@ build_macos_app() {
     --onedir \
     --name "JobsMockTool" \
     --osx-bundle-identifier "com.jobs.mocktool" \
+    --add-data "${PROJECT_ROOT}/icon.png:." \
     --collect-all PySide6 \
     "${PROJECT_ROOT}/app.py"
 
