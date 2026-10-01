@@ -11,27 +11,42 @@ if errorlevel 1 goto :error
 
 call .venv\Scripts\activate
 
-echo [JobsMockTool] Install dependencies...
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-if errorlevel 1 goto :error
+python -c "import PySide6.QtWidgets, PySide6.QtWebEngineWidgets, PyInstaller" >nul 2>nul
+if errorlevel 1 (
+  call :confirm_required_install "Missing project dependencies" || goto :error
+  python -m pip install -r requirements.txt || goto :error
+  python -c "import PySide6.QtWidgets, PySide6.QtWebEngineWidgets, PyInstaller" || goto :error
+)
 
+python "%~dp0scripts\artifact_shortcuts.py" --root "%~dp0." --clear || goto :error
 echo [JobsMockTool] Clean old build outputs...
 rmdir /s /q build 2>nul
+fsutil reparsepoint query "%~dp0dist" >nul 2>nul
+if not errorlevel 1 goto :error
 rmdir /s /q dist 2>nul
+if exist dist goto :error
+
+set "BUILD_STAMP="
+for /f "delims=" %%T in ('powershell -NoProfile -Command "Get-Date -Format 'yyyy.MM.dd HH-mm-ss'"') do set "BUILD_STAMP=%%T"
+if not defined BUILD_STAMP goto :error
+set "DIST_DIR=%~dp0dist\%BUILD_STAMP%"
+echo Build time (YYYY.MM.DD HH-mm-ss): %BUILD_STAMP%
 
 echo [JobsMockTool] Build Windows executable folder...
-echo QtWebEngine is large. The generated exe must stay with the dist\JobsMockTool folder.
-pyinstaller --noconfirm --clean --windowed --onedir --name "JobsMockTool" --collect-all PySide6 app.py
+echo QtWebEngine is large. The generated exe must stay with the "%DIST_DIR%\JobsMockTool" folder.
+pyinstaller --noconfirm --clean --distpath "%DIST_DIR%" --windowed --onedir --name "JobsMockTool" --collect-all PySide6 app.py
 if errorlevel 1 goto :error
 
 echo.
 echo ============================================================
 echo   Windows executable is here:
-echo   dist\JobsMockTool\JobsMockTool.exe
+echo   %DIST_DIR%\JobsMockTool\JobsMockTool.exe
 echo ============================================================
 echo.
-pause
+if not exist "%DIST_DIR%\JobsMockTool\JobsMockTool.exe" goto :error
+python "%~dp0scripts\artifact_shortcuts.py" --root "%~dp0." "%DIST_DIR%\JobsMockTool\JobsMockTool.exe" || goto :error
+start "" explorer.exe "%DIST_DIR%"
+start "" /D "%DIST_DIR%\JobsMockTool" "%DIST_DIR%\JobsMockTool\JobsMockTool.exe"
 exit /b 0
 
 :show_notice
@@ -43,6 +58,7 @@ echo ============================================================
 echo.
 echo 当前文件：build_windows.bat
 echo 用途：把 JobsMockTool 源码打包成 Windows 可执行程序文件夹。
+echo Output: dist\YYYY.MM.DD HH-mm-ss\ using local build time, shared by all artifacts.
 echo.
 echo 【JobsMockTool 是什么】
 echo   一个本地 Mock API 桌面工具，用来在没有真实后端、接口不稳定、
@@ -59,12 +75,12 @@ echo   1. 创建或复用当前目录的 .venv 虚拟环境。
 echo   2. 安装 requirements.txt 里的依赖。
 echo   3. 清理旧的 build / dist 构建产物。
 echo   4. 使用 PyInstaller 打包 Windows 版 JobsMockTool。
-echo   5. 输出到：dist\JobsMockTool\JobsMockTool.exe
+echo   5. 输出到：dist\YYYY.MM.DD HH-mm-ss\JobsMockTool\JobsMockTool.exe
 echo.
 echo 【注意】
 echo   - 旧的 build / dist 会被删除，已有构建产物会被覆盖。
 echo   - QtWebEngine 体积较大，构建可能较慢，请不要关闭窗口。
-echo   - 生成的 exe 需要和 dist\JobsMockTool 文件夹内其他文件一起使用。
+echo   - 生成的 exe 需要和 dist\YYYY.MM.DD HH-mm-ss\JobsMockTool 文件夹内其他文件一起使用。
 echo.
 echo 准备好后按回车开始；按 Ctrl+C 取消。
 echo.
@@ -75,5 +91,15 @@ exit /b 0
 :error
 echo.
 echo Build failed. Please check the output above.
+echo Build clears old dist. On success, reveal output and launch the packaged app.
 pause
 exit /b 1
+
+:confirm_required_install
+rem ReadLine 保留空格，并把 EOF 当成取消。
+powershell -NoProfile -Command "[Console]::Write('%~1 (Enter to install; any character to cancel): '); $answer = [Console]::ReadLine(); if ($null -eq $answer -or $answer.Length -gt 0) { exit 1 }; exit 0"
+if errorlevel 1 (
+  echo Dependency installation cancelled. Stopping current task.
+  exit /b 1
+)
+exit /b 0

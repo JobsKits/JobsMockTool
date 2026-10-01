@@ -13,7 +13,8 @@ LOG_FILE="/tmp/${SCRIPT_BASENAME}.log"
 
 VENV_DIR="${PROJECT_ROOT}/.venv"
 BUILD_DIR="${PROJECT_ROOT}/build"
-DIST_DIR="${PROJECT_ROOT}/dist"
+DIST_ROOT="${PROJECT_ROOT}/dist"
+DIST_DIR="$DIST_ROOT"
 APP_BUNDLE="${DIST_DIR}/JobsMockTool.app"
 DMG_PATH="${DIST_DIR}/JobsMockTool-Installer.dmg"
 DMG_STAGING="${DIST_DIR}/dmg_staging"
@@ -70,6 +71,8 @@ show_readme_and_wait() {
     warn_echo "流程会安装 Python 依赖，并清理旧的 build / dist 构建目录。"
   fi
   echo ""
+  print '构建产物按本机年月日时分秒保存到 dist/YYYY.MM.DD HH-mm-ss/（例如 2020.06.04 12-23-21），同次构建共用一个时间目录。'
+  print '打包前清理旧 dist；成功后在第一层更新产物快捷方式、打开目录并启动本机软件。'
   read -r "?👉 已阅读自述文件，按回车继续；按 Ctrl+C 取消：" _
 }
 # 普通升级动作默认跳过，只有输入任意字符后才执行。
@@ -115,6 +118,12 @@ check_environment() {
   info_echo "项目目录：${PROJECT_ROOT}"
   info_echo "日志文件：${LOG_FILE}"
 }
+# 必需依赖缺失时回车安装，任意字符取消整个流程。
+confirm_required_install() {
+  local answer=""
+  IFS= read -r "?${1}（直接回车安装；输入任意字符后回车取消）：" answer || { print -u2 '没有交互输入，停止依赖安装。'; exit 1; }
+  [[ -z "$answer" ]] || { print -u2 '已取消依赖安装，停止当前流程。'; exit 1; }
+}
 # 创建项目虚拟环境，并按需升级 pip 后安装构建依赖。
 prepare_python_environment() {
   info_echo "创建 / 复用虚拟环境：${VENV_DIR}"
@@ -128,18 +137,29 @@ prepare_python_environment() {
     gray_echo "已跳过 pip 升级。"
   fi
 
-  info_echo "安装 requirements.txt 中的构建依赖"
-  run_logged python -m pip install -r "${PROJECT_ROOT}/requirements.txt"
+  if ! python -c 'import PySide6.QtWidgets, PySide6.QtWebEngineWidgets, PyInstaller' >/dev/null 2>&1; then
+    confirm_required_install "需要联网补齐工程依赖"
+    run_logged python -m pip install -r "${PROJECT_ROOT}/requirements.txt"
+    python -c 'import PySide6.QtWidgets, PySide6.QtWebEngineWidgets, PyInstaller' || return 1
+  fi
 }
 # 清理两端共用的 PyInstaller 构建目录，避免旧文件污染本次产物。
 clean_build_outputs() {
-  if ! confirm_yes "即将删除旧构建目录：${BUILD_DIR} 和 ${DIST_DIR}"; then
+  [[ ! -L "$DIST_ROOT" ]] || { error_echo "拒绝清理符号链接 dist"; return 1; }
+  if ! confirm_yes "即将删除旧构建目录：${BUILD_DIR} 和 ${DIST_ROOT}"; then
     warn_echo "未收到 YES，已取消本次构建。"
     return 1
   fi
 
+  run_logged python "${PROJECT_ROOT}/scripts/artifact_shortcuts.py" --root "$PROJECT_ROOT" --clear
   info_echo "清理旧构建产物"
-  rm -rf -- "$BUILD_DIR" "$DIST_DIR"
+  rm -rf -- "$BUILD_DIR" "$DIST_ROOT"
+  BUILD_STAMP="$(date "+%Y.%m.%d %H-%M-%S")"
+  DIST_DIR="${DIST_ROOT}/${BUILD_STAMP}"
+  APP_BUNDLE="${DIST_DIR}/JobsMockTool.app"
+  DMG_PATH="${DIST_DIR}/JobsMockTool-Installer.dmg"
+  DMG_STAGING="${DIST_DIR}/dmg_staging"
+  info_echo "构建时间（年月日时分秒）：${BUILD_STAMP}"
 }
 # 使用 PyInstaller 生成 macOS App Bundle。
 build_macos_app() {
@@ -149,6 +169,7 @@ build_macos_app() {
     --clean \
     --windowed \
     --onedir \
+    --distpath "$DIST_DIR" \
     --name "JobsMockTool" \
     --osx-bundle-identifier "com.jobs.mocktool" \
     --add-data "${PROJECT_ROOT}/icon.png:." \
@@ -189,6 +210,9 @@ show_build_result() {
   warn_echo "首次打开如被 Gatekeeper 拦截：系统设置 -> 隐私与安全性 -> 仍要打开。"
   info_echo "完整日志：${LOG_FILE}"
   highlight_echo "========================================================================"
+  run_logged python "${PROJECT_ROOT}/scripts/artifact_shortcuts.py" --root "$PROJECT_ROOT" "$APP_BUNDLE" "$DMG_PATH"
+  open "$DIST_DIR" || return 1
+  open "$APP_BUNDLE" || return 1
 }
 # 编排脚本的高层业务流程。
 # 切换到 Mock 工具项目根目录。
@@ -204,24 +228,15 @@ initialize_script_runtime() {
 }
 # 编排脚本的高层业务流程。
 main() {
-  # 展示脚本说明并等待用户确认影响范围。
-  show_readme_and_wait
-  # 初始化 Shell 选项、日志、依赖和入口运行状态。
-  initialize_script_runtime
-  # 切换到 Mock 工具项目根目录。
-  change_to_project_root
-  # 检查当前步骤所需的环境、路径或输入条件。
-  check_environment
-  # 准备后续业务需要的配置、目录或运行上下文。
-  prepare_python_environment
-  # 清理本次流程产生的临时内容或指定缓存。
-  clean_build_outputs
-  # 执行当前流程中的独立业务步骤：build_macos_app。
-  build_macos_app
-  # 执行安装步骤，并保留命令失败信息供后续排查。
-  build_dmg_installer
-  # 执行当前流程中的独立业务步骤：show_build_result。
-  show_build_result
+  show_readme_and_wait # 展示用途并确认清理范围。
+  initialize_script_runtime # 初始化严格模式和日志。
+  change_to_project_root # 定位当前工程。
+  check_environment # 检查构建依赖。
+  prepare_python_environment # 准备工程隔离环境。
+  clean_build_outputs # 清理旧构建产物。
+  build_macos_app # 生成本机 APP。
+  build_dmg_installer # 封装 DMG。
+  show_build_result # 打开产物目录并启动 APP。
 }
 
 main "$@"
