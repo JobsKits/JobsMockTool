@@ -38,7 +38,7 @@
 
 ## 一、项目目标 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 1.1、核心目的
+### 1.1、核心目的 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 这个程序用于在本机启动一个可配置的 Mock Server，让当前机器临时变成一台“自己的接口服务器”。
 
@@ -57,7 +57,7 @@
 GET http://127.0.0.1:8765/api/users
 ```
 
-### 1.2、解决的问题
+### 1.2、解决的问题 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 开发过程中经常遇到这些问题：
 
@@ -77,7 +77,7 @@ GET http://127.0.0.1:8765/api/users
 
 ![image-20260602201855113](./assets/image-20260602201855113.png)
 
-### 2.1、基础功能
+### 2.1、基础功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 功能 | 说明 |
 | --- | --- |
@@ -92,7 +92,7 @@ GET http://127.0.0.1:8765/api/users
 | 响应格式化 | 请求结果会自动格式化 JSON，方便人工阅读。 |
 | 跨平台打包 | 支持 Windows `.exe` 和 macOS `.app` / `.dmg` 打包脚本。 |
 
-### 2.2、增强功能
+### 2.2、增强功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 功能 | 说明 |
 | --- | --- |
@@ -115,7 +115,7 @@ GET http://127.0.0.1:8765/api/users
 
 ## 三、界面结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 3.1、顶部区域
+### 3.1、顶部区域 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 顶部左侧显示：
 
@@ -135,7 +135,7 @@ GET http://127.0.0.1:8765/api/users
 
 界面细节：顶部选项卡使用自定义左对齐栏，不再依赖系统默认 `QTabWidget` 的居中行为；主要文本区域交给布局系统联动，不再用固定高度硬撑。
 
-### 3.2、配置请求的数据
+### 3.2、配置请求的数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 这个页面负责生成本地接口服务。
 
@@ -156,7 +156,7 @@ GET http://127.0.0.1:8765/api/users
 | 当前响应预览 | 实时查看树形数据生成后的 JSON。 |
 | 启动服务按钮 | 启动或重启本地 Mock Server。 |
 
-### 3.3、请求配置的数据
+### 3.3、请求配置的数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 这个页面负责请求接口并查看结果，定位类似轻量 Postman。
 
@@ -174,7 +174,7 @@ GET http://127.0.0.1:8765/api/users
 
 对于非 `GET` 请求，请求参数会作为 JSON Body 发送。
 
-### 3.4、窗口缩放与自适应
+### 3.4、窗口缩放与自适应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 界面内部的文本框、结果区和树形结构区域采用自适应布局：
 
@@ -189,7 +189,7 @@ GET http://127.0.0.1:8765/api/users
 
 ## 四、Mock 数据结构设计 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 4.1、为什么用树形结构
+### 4.1、为什么用树形结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 程序里的数据容器本质只有两类：
 
@@ -204,7 +204,7 @@ GET http://127.0.0.1:8765/api/users
 - `dict` 和 `list` 可以继续添加子节点。
 - 裸数据是叶子节点，不能继续往下扩展。
 
-### 4.2、支持的数据类型
+### 4.2、支持的数据类型 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 | 类型 | 含义 | 是否可继续添加子节点 |
 | --- | --- | --- |
@@ -216,7 +216,7 @@ GET http://127.0.0.1:8765/api/users
 | `null` | 空值 | 否 |
 | `object_json_string` | 对象 JSON 字符串，调用方需要二次解码 | 否 |
 
-### 4.3、对象字符串说明
+### 4.3、对象字符串说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 有些业务里“对象数据”并不直接作为 JSON Object 返回，而是作为字符串返回给调用方二次解码。
 
@@ -238,7 +238,7 @@ object_json_string
 
 ## 五、服务模式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 5.1、模式一：同一端口，按路径区分接口
+### 5.1、模式一：同一端口，按路径区分接口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 适合大多数本地联调场景。
 
@@ -256,7 +256,7 @@ GET  http://127.0.0.1:8765/api/profile
 - 更接近普通后端服务。
 - 前端只需要配置一个 baseURL。
 
-### 5.2、模式二：每个接口独立端口
+### 5.2、模式二：每个接口独立端口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 适合你想模拟多个服务、多个微服务、多个本地接口来源的场景。
 
@@ -278,7 +278,7 @@ GET  http://127.0.0.1:8767/api/profile
 
 ## 六、条件响应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 6.1、默认响应
+### 6.1、默认响应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 匹配条件为空对象时，表示默认响应：
 
@@ -288,7 +288,7 @@ GET  http://127.0.0.1:8767/api/profile
 
 当没有任何条件响应命中时，程序会返回默认响应。
 
-### 6.2、按普通参数匹配
+### 6.2、按普通参数匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 请求参数里带 `type=vip` 时命中：
 
@@ -298,7 +298,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.3、按 query 匹配
+### 6.3、按 query 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```json
 {
@@ -306,7 +306,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.4、按 body 匹配
+### 6.4、按 body 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```json
 {
@@ -314,7 +314,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.5、按 headers 匹配
+### 6.5、按 headers 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```json
 {
@@ -322,7 +322,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.6、状态码配置
+### 6.6、状态码配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 每个条件响应都可以配置自己的 HTTP 状态码。
 
@@ -341,7 +341,7 @@ GET  http://127.0.0.1:8767/api/profile
 
 ## 七、保存 / 加载 / 导入 / 导出 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 7.1、保存完整配置
+### 7.1、保存完整配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 点击 `保存配置` 后，会导出完整 Mock 项目 JSON。
 
@@ -361,19 +361,19 @@ GET  http://127.0.0.1:8767/api/profile
 jobs_mock_tool_config.json
 ```
 
-### 7.2、加载完整配置
+### 7.2、加载完整配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 点击 `加载配置` 后，选择之前保存的 JSON 文件即可恢复完整项目。
 
 加载配置会停止当前服务，避免旧服务和新配置混在一起。
 
-### 7.3、导入 JSON 模板
+### 7.3、导入 JSON 模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 如果你已经有一段 JSON 响应，可以点击 `导入 JSON 模板`。
 
 程序会自动把 JSON 转成树形结构。
 
-### 7.4、导出 JSON 模板
+### 7.4、导出 JSON 模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 点击 `导出 JSON 模板`，可以把当前树形响应导出成标准 JSON 文件。
 
@@ -381,7 +381,7 @@ jobs_mock_tool_config.json
 
 ## 八、运行源码 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 8.1、安装依赖
+### 8.1、安装依赖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```shell
 python3 -m venv .venv
@@ -390,7 +390,7 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 8.2、启动程序
+### 8.2、启动程序 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ```shell
 python app.py
@@ -406,7 +406,7 @@ python app.py
 
 ## 九、macOS 打包与安装 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 9.1、打包命令
+### 9.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 必须在 macOS 上执行：
 
@@ -422,13 +422,13 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool.app
 dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 ```
 
-### 9.2、安装方式
+### 9.2、安装方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 1. 双击 `JobsMockTool-Installer.dmg`。
 2. 把 `JobsMockTool.app` 拖到 `Applications`。
 3. 以后从 Launchpad 或应用程序目录启动。
 
-### 9.3、首次打开被拦截
+### 9.3、首次打开被拦截 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 内部未签名版本可能被 macOS Gatekeeper 拦截。
 
@@ -445,7 +445,7 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 
 ## 十、Windows 打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 10.1、打包命令
+### 10.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 必须在 Windows 上执行：
 
@@ -459,7 +459,7 @@ build_windows.bat
 dist\YYYY.MM.DD HH-mm-ss\JobsMockTool\JobsMockTool.exe
 ```
 
-### 10.2、为什么不是单文件 exe
+### 10.2、为什么不是单文件 exe <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 本版本集成了 Qt WebEngine，用于显示顶部 3D Earth 页面。Qt WebEngine 依赖 Chromium 相关资源，强行打成单文件 exe 容易出现运行时资源缺失。
 
@@ -495,7 +495,7 @@ pyinstaller>=6.0
 
 ## 十二、常见问题 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-### 12.1、顶部 3D 地球不显示
+### 12.1、顶部 3D 地球不显示 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 可能原因：
 
@@ -517,7 +517,7 @@ python app.py
 --collect-all PySide6
 ```
 
-### 12.2、端口启动失败
+### 12.2、端口启动失败 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 说明端口被其他程序占用了。
 
@@ -527,7 +527,7 @@ python app.py
 - 关闭占用端口的程序。
 - 在“每个接口独立端口”模式下检查是否有端口重复。
 
-### 12.3、接口返回 404
+### 12.3、接口返回 404 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 说明请求路径没有配置。
 
@@ -537,7 +537,7 @@ python app.py
 - API 路径是否一致。
 - 是否已经点击 `启动 / 重启本地服务`。
 
-### 12.4、接口返回 405
+### 12.4、接口返回 405 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 说明路径存在，但请求方式不匹配。
 
@@ -553,7 +553,7 @@ POST /api/orders
 GET /api/orders
 ```
 
-### 12.5、条件响应没有命中
+### 12.5、条件响应没有命中 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 检查匹配条件 JSON。
 
