@@ -5,6 +5,29 @@
 # - 影响范围：可能修改当前项目、用户环境或脚本指定的目标。
 # - 运行提示：运行后会先打印内置自述；终端模式按回车确认后继续，按 Ctrl+C 可取消。
 
+# 仅渲染自述：标题红色加粗，编号正文蓝色常规字重；非彩色终端输出纯文本。
+jobs_intro_style() {
+  local intro_color=0
+  if [ -t 1 ] && [ -n "${TERM:-}" ] && [ "${TERM:-}" != dumb ] &&
+     [ -z "${NO_COLOR+x}" ] && [ "${PLAIN_OUTPUT:-0}" != 1 ] &&
+     [ "${IS_SOURCETREE_RUNTIME:-0}" != 1 ]; then
+    intro_color=1
+  fi
+  /usr/bin/awk -v color="$intro_color" -v role="${1:-body}" '
+    BEGIN { esc = sprintf("%c", 27) }
+    {
+      gsub(esc "\\[[0-9;]*m", "")
+      gsub(/\\(033|e|x1[bB])\[[0-9;]*m/, "")
+      if (!color || $0 ~ /^[[:space:]]*$/) { print; next }
+      numbered = ($0 ~ /^[[:space:]➤ℹ🔹✔⚠]*([0-9]+[、.)）]|[0-9]+️⃣|[-•])/)
+      heading = ($0 ~ /^[[:space:]]*#{1,6}[[:space:]]/ || $0 ~ /[：:][[:space:]]*$/ || $0 ~ /^[[:space:]]*[=━─-]{3}/)
+      title = (!numbered && (role == "title" || heading))
+      if (role == "auto" && !seen && !numbered) title = 1
+      if ($0 !~ /^[[:space:]]*[=━─-]+[[:space:]]*$/) seen = 1
+      printf "%s%s%s\n", esc (title ? "[1;31m" : "[0;34m"), $0, esc "[0m"
+    }
+  '
+}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-${(%):-%x}}")" && pwd)"
 SCRIPT_PATH="${SCRIPT_DIR}/$(basename -- "$0")"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd -P)"
@@ -52,27 +75,19 @@ run_logged() {
 }
 # 优先展示仓库 README；缺失时输出脚本内置说明，避免双击误触。
 show_readme_and_wait() {
-  local readme_path="${SCRIPT_DIR}/README.md"
   clear
-  print -r -- '============================== 脚本内置自述 =============================='
-  print -r -- '脚本名称：build_macos.command'
-  print -r -- '核心用途：执行“build_macos”对应的自动化任务。'
-  print -r -- '影响范围：可能修改当前项目、用户环境或脚本指定的目标。'
-  print -r -- '取消方式：确认前按 Ctrl+C 终止，不会继续执行后续业务。'
-  print -r -- '============================================================================'
-  if [[ -f "$readme_path" ]]; then
-    highlight_echo "============================== README.md =============================="
-    cat "$readme_path" | tee -a "$LOG_FILE"
-    highlight_echo "========================================================================"
-  else
-    warn_echo "未找到 README.md，改为展示内置流程说明。"
-    note_echo "当前脚本：${SCRIPT_PATH}"
-    note_echo "脚本用途：构建 JobsMockTool.app，并生成可安装的 DMG。"
-    warn_echo "流程会安装 Python 依赖，并清理旧的 build / dist 构建目录。"
-  fi
-  echo ""
-  print '构建产物按本机年月日时分秒保存到 dist/YYYY.MM.DD HH-mm-ss/（例如 2020.06.04 12-23-21），同次构建共用一个时间目录。'
-  print '打包前清理旧 dist；成功后在第一层更新产物快捷方式、打开目录并启动本机软件。'
+  print -r -- '============================== 脚本内置自述 ==============================' | jobs_intro_style title
+  print -r -- '脚本名称：build_macos.command' | jobs_intro_style title
+  print -r -- '核心用途：执行“build_macos”对应的自动化任务。' | jobs_intro_style body
+  print -r -- '影响范围：可能修改当前项目、用户环境或脚本指定的目标。' | jobs_intro_style body
+  print -r -- '取消方式：确认前按 Ctrl+C 终止，不会继续执行后续业务。' | jobs_intro_style body
+  print -r -- '============================================================================' | jobs_intro_style title
+  note_echo "1、脚本用途：构建 JobsMockTool.app，并生成可安装的 DMG。" | jobs_intro_style body
+  note_echo "2、影响范围：安装 Python 依赖，并清理旧的 build / dist 构建目录。" | jobs_intro_style body
+  note_echo "3、日志文件：${LOG_FILE}" | jobs_intro_style body
+  echo "" | jobs_intro_style body
+  print '构建产物按本机年月日时分秒保存到 dist/YYYY.MM.DD HH-mm-ss/（例如 2020.06.04 12-23-21），同次构建共用一个时间目录。' | jobs_intro_style body
+  print '打包前清理旧 dist；成功后在第一层更新产物快捷方式、打开目录并启动本机软件。' | jobs_intro_style body
   read -r "?👉 已阅读自述文件，按回车继续；按 Ctrl+C 取消：" _
 }
 # 普通升级动作默认跳过，只有输入任意字符后才执行。
