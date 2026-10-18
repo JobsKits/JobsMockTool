@@ -2,11 +2,75 @@
 
 ![Jobs出品，必属精品](https://picsum.photos/1500/400)
 
-[toc]
+<!-- jobs-toc:start -->
+<!-- jobs-toc:source {"v":2,"token":"[toc]"} -->
+<details>
+<summary>📚 目录（点击展开 / 收起）</summary>
+
+- [🔥 前言](#jobs-toc-heading-1)
+- [一、项目目标](#jobs-toc-heading-2)
+  - [1.1、核心目的](#jobs-toc-heading-3)
+  - [1.2、解决的问题](#jobs-toc-heading-4)
+- [二、功能总览](#jobs-toc-heading-5)
+  - [2.1、基础功能](#jobs-toc-heading-6)
+  - [2.2、增强功能](#jobs-toc-heading-7)
+- [三、界面结构](#jobs-toc-heading-8)
+  - [3.1、顶部区域](#jobs-toc-heading-9)
+  - [3.2、配置请求的数据](#jobs-toc-heading-10)
+  - [3.3、请求配置的数据](#jobs-toc-heading-11)
+  - [3.4、窗口缩放与自适应](#jobs-toc-heading-12)
+- [四、Mock 数据结构设计](#jobs-toc-heading-13)
+  - [4.1、为什么用树形结构](#jobs-toc-heading-14)
+  - [4.2、支持的数据类型](#jobs-toc-heading-15)
+  - [4.3、对象字符串说明](#jobs-toc-heading-16)
+- [五、服务模式](#jobs-toc-heading-17)
+  - [5.1、模式一：同一端口，按路径区分接口](#jobs-toc-heading-18)
+  - [5.2、模式二：每个接口独立端口](#jobs-toc-heading-19)
+- [六、条件响应](#jobs-toc-heading-20)
+  - [6.1、默认响应](#jobs-toc-heading-21)
+  - [6.2、按普通参数匹配](#jobs-toc-heading-22)
+  - [6.3、按 query 匹配](#jobs-toc-heading-23)
+  - [6.4、按 body 匹配](#jobs-toc-heading-24)
+  - [6.5、按 headers 匹配](#jobs-toc-heading-25)
+  - [6.6、状态码配置](#jobs-toc-heading-26)
+- [七、保存 / 加载 / 导入 / 导出](#jobs-toc-heading-27)
+  - [7.1、保存完整配置](#jobs-toc-heading-28)
+  - [7.2、加载完整配置](#jobs-toc-heading-29)
+  - [7.3、导入 JSON 模板](#jobs-toc-heading-30)
+  - [7.4、导出 JSON 模板](#jobs-toc-heading-31)
+- [八、运行源码](#jobs-toc-heading-32)
+  - [8.1、安装依赖](#jobs-toc-heading-33)
+  - [8.2、启动程序](#jobs-toc-heading-34)
+- [九、macOS 打包与安装](#jobs-toc-heading-35)
+  - [9.1、打包命令](#jobs-toc-heading-36)
+  - [9.2、安装方式](#jobs-toc-heading-37)
+  - [9.3、首次打开被拦截](#jobs-toc-heading-38)
+  - [【MacOS】📦生成dmg.command](#jobs-toc-heading-39)
+  - [build\_macos.command](#jobs-toc-heading-40)
+- [十、Windows 打包](#jobs-toc-heading-41)
+  - [10.1、打包命令](#jobs-toc-heading-42)
+  - [10.2、为什么不是单文件 exe](#jobs-toc-heading-43)
+  - [【Windows】📦生成exe.bat](#jobs-toc-heading-44)
+  - [build\_windows.bat](#jobs-toc-heading-45)
+- [十一、依赖说明](#jobs-toc-heading-46)
+- [十二、常见问题](#jobs-toc-heading-47)
+  - [12.1、顶部 3D 地球不显示](#jobs-toc-heading-48)
+  - [12.2、端口启动失败](#jobs-toc-heading-49)
+  - [12.3、接口返回 404](#jobs-toc-heading-50)
+  - [12.4、接口返回 405](#jobs-toc-heading-51)
+  - [12.5、条件响应没有命中](#jobs-toc-heading-52)
+- [十三、风险说明](#jobs-toc-heading-53)
+- [十四、项目结构](#jobs-toc-heading-54)
+- [十五、未执行声明](#jobs-toc-heading-55)
+- [十六、Mac Python 环境自检](#jobs-toc-heading-56)
+- [十七、本仓目录与脚本入口](#repository-layout-and-entrypoints)
+
+</details>
+<!-- jobs-toc:end -->
 
 ---
 
-## 🔥 <font id=前言>前言</font>
+## <span id="jobs-toc-heading-1" data-jobs-toc="v2">🔥 <font id=前言>前言</font></span><!-- jobs-toc:heading-end -->
 
 `JobsMockTool` 是一个基于 [**Python**](https://www.python.org) + [**PySide6**](https://doc.qt.io/qtforpython-6/) 的本地 Mock API 桌面工具。
 
@@ -36,9 +100,9 @@
 
 ---
 
-## 一、项目目标 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-2" data-jobs-toc="v2">一、项目目标 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 1.1、核心目的 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-3" data-jobs-toc="v2">1.1、核心目的 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 这个程序用于在本机启动一个可配置的 Mock Server，让当前机器临时变成一台“自己的接口服务器”。
 
@@ -57,7 +121,7 @@
 GET http://127.0.0.1:8765/api/users
 ```
 
-### 1.2、解决的问题 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-4" data-jobs-toc="v2">1.2、解决的问题 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 开发过程中经常遇到这些问题：
 
@@ -71,13 +135,13 @@ GET http://127.0.0.1:8765/api/users
 
 ---
 
-## 二、功能总览 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-5" data-jobs-toc="v2">二、功能总览 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 ![image-20260602201811340](./assets/image-20260602201811340.png)
 
 ![image-20260602201855113](./assets/image-20260602201855113.png)
 
-### 2.1、基础功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-6" data-jobs-toc="v2">2.1、基础功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 | 功能 | 说明 |
 | --- | --- |
@@ -92,7 +156,7 @@ GET http://127.0.0.1:8765/api/users
 | 响应格式化 | 请求结果会自动格式化 JSON，方便人工阅读。 |
 | 跨平台打包 | 支持 Windows `.exe` 和 macOS `.app` / `.dmg` 打包脚本。 |
 
-### 2.2、增强功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-7" data-jobs-toc="v2">2.2、增强功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 | 功能 | 说明 |
 | --- | --- |
@@ -113,9 +177,9 @@ GET http://127.0.0.1:8765/api/users
 
 ---
 
-## 三、界面结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-8" data-jobs-toc="v2">三、界面结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 3.1、顶部区域 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-9" data-jobs-toc="v2">3.1、顶部区域 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 顶部左侧显示：
 
@@ -135,7 +199,7 @@ GET http://127.0.0.1:8765/api/users
 
 界面细节：顶部选项卡使用自定义左对齐栏，不再依赖系统默认 `QTabWidget` 的居中行为；主要文本区域交给布局系统联动，不再用固定高度硬撑。
 
-### 3.2、配置请求的数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-10" data-jobs-toc="v2">3.2、配置请求的数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 这个页面负责生成本地接口服务。
 
@@ -156,7 +220,7 @@ GET http://127.0.0.1:8765/api/users
 | 当前响应预览 | 实时查看树形数据生成后的 JSON。 |
 | 启动服务按钮 | 启动或重启本地 Mock Server。 |
 
-### 3.3、请求配置的数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-11" data-jobs-toc="v2">3.3、请求配置的数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 这个页面负责请求接口并查看结果，定位类似轻量 Postman。
 
@@ -174,7 +238,7 @@ GET http://127.0.0.1:8765/api/users
 
 对于非 `GET` 请求，请求参数会作为 JSON Body 发送。
 
-### 3.4、窗口缩放与自适应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-12" data-jobs-toc="v2">3.4、窗口缩放与自适应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 界面内部的文本框、结果区和树形结构区域采用自适应布局：
 
@@ -187,9 +251,9 @@ GET http://127.0.0.1:8765/api/users
 
 ---
 
-## 四、Mock 数据结构设计 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-13" data-jobs-toc="v2">四、Mock 数据结构设计 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 4.1、为什么用树形结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-14" data-jobs-toc="v2">4.1、为什么用树形结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 程序里的数据容器本质只有两类：
 
@@ -204,7 +268,7 @@ GET http://127.0.0.1:8765/api/users
 - `dict` 和 `list` 可以继续添加子节点。
 - 裸数据是叶子节点，不能继续往下扩展。
 
-### 4.2、支持的数据类型 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-15" data-jobs-toc="v2">4.2、支持的数据类型 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 | 类型 | 含义 | 是否可继续添加子节点 |
 | --- | --- | --- |
@@ -216,7 +280,7 @@ GET http://127.0.0.1:8765/api/users
 | `null` | 空值 | 否 |
 | `object_json_string` | 对象 JSON 字符串，调用方需要二次解码 | 否 |
 
-### 4.3、对象字符串说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-16" data-jobs-toc="v2">4.3、对象字符串说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 有些业务里“对象数据”并不直接作为 JSON Object 返回，而是作为字符串返回给调用方二次解码。
 
@@ -236,9 +300,9 @@ object_json_string
 
 ---
 
-## 五、服务模式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-17" data-jobs-toc="v2">五、服务模式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 5.1、模式一：同一端口，按路径区分接口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-18" data-jobs-toc="v2">5.1、模式一：同一端口，按路径区分接口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 适合大多数本地联调场景。
 
@@ -256,7 +320,7 @@ GET  http://127.0.0.1:8765/api/profile
 - 更接近普通后端服务。
 - 前端只需要配置一个 baseURL。
 
-### 5.2、模式二：每个接口独立端口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-19" data-jobs-toc="v2">5.2、模式二：每个接口独立端口 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 适合你想模拟多个服务、多个微服务、多个本地接口来源的场景。
 
@@ -276,9 +340,9 @@ GET  http://127.0.0.1:8767/api/profile
 
 ---
 
-## 六、条件响应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-20" data-jobs-toc="v2">六、条件响应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 6.1、默认响应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-21" data-jobs-toc="v2">6.1、默认响应 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 匹配条件为空对象时，表示默认响应：
 
@@ -288,7 +352,7 @@ GET  http://127.0.0.1:8767/api/profile
 
 当没有任何条件响应命中时，程序会返回默认响应。
 
-### 6.2、按普通参数匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-22" data-jobs-toc="v2">6.2、按普通参数匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 请求参数里带 `type=vip` 时命中：
 
@@ -298,7 +362,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.3、按 query 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-23" data-jobs-toc="v2">6.3、按 query 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 ```json
 {
@@ -306,7 +370,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.4、按 body 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-24" data-jobs-toc="v2">6.4、按 body 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 ```json
 {
@@ -314,7 +378,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.5、按 headers 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-25" data-jobs-toc="v2">6.5、按 headers 匹配 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 ```json
 {
@@ -322,7 +386,7 @@ GET  http://127.0.0.1:8767/api/profile
 }
 ```
 
-### 6.6、状态码配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-26" data-jobs-toc="v2">6.6、状态码配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 每个条件响应都可以配置自己的 HTTP 状态码。
 
@@ -339,9 +403,9 @@ GET  http://127.0.0.1:8767/api/profile
 
 ---
 
-## 七、保存 / 加载 / 导入 / 导出 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-27" data-jobs-toc="v2">七、保存 / 加载 / 导入 / 导出 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 7.1、保存完整配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-28" data-jobs-toc="v2">7.1、保存完整配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 点击 `保存配置` 后，会导出完整 Mock 项目 JSON。
 
@@ -361,27 +425,27 @@ GET  http://127.0.0.1:8767/api/profile
 jobs_mock_tool_config.json
 ```
 
-### 7.2、加载完整配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-29" data-jobs-toc="v2">7.2、加载完整配置 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 点击 `加载配置` 后，选择之前保存的 JSON 文件即可恢复完整项目。
 
 加载配置会停止当前服务，避免旧服务和新配置混在一起。
 
-### 7.3、导入 JSON 模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-30" data-jobs-toc="v2">7.3、导入 JSON 模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 如果你已经有一段 JSON 响应，可以点击 `导入 JSON 模板`。
 
 程序会自动把 JSON 转成树形结构。
 
-### 7.4、导出 JSON 模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-31" data-jobs-toc="v2">7.4、导出 JSON 模板 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 点击 `导出 JSON 模板`，可以把当前树形响应导出成标准 JSON 文件。
 
 ---
 
-## 八、运行源码 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-32" data-jobs-toc="v2">八、运行源码 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 8.1、安装依赖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-33" data-jobs-toc="v2">8.1、安装依赖 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 ```shell
 python3 -m venv .venv
@@ -390,7 +454,7 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-### 8.2、启动程序 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-34" data-jobs-toc="v2">8.2、启动程序 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 ```shell
 python app.py
@@ -404,9 +468,9 @@ python app.py
 
 ---
 
-## 九、macOS 打包与安装 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-35" data-jobs-toc="v2">九、macOS 打包与安装 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 9.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-36" data-jobs-toc="v2">9.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 必须在 macOS 上执行。在项目目录双击 `【MacOS】📦生成dmg.command`，或从项目目录运行：
 
@@ -429,13 +493,13 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool.app
 dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 ```
 
-### 9.2、安装方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-37" data-jobs-toc="v2">9.2、安装方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 1. 双击 `JobsMockTool-Installer.dmg`。
 2. 把 `JobsMockTool.app` 拖到 `Applications`。
 3. 以后从 Launchpad 或应用程序目录启动。
 
-### 9.3、首次打开被拦截 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-38" data-jobs-toc="v2">9.3、首次打开被拦截 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 内部未签名版本可能被 macOS Gatekeeper 拦截。
 
@@ -450,7 +514,7 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 
 ---
 
-### [【MacOS】📦生成dmg.command](./【MacOS】📦生成dmg.command)
+### <span id="jobs-toc-heading-39" data-jobs-toc="v2">[【MacOS】📦生成dmg.command](./【MacOS】📦生成dmg.command)</span><!-- jobs-toc:heading-end -->
 
 > **目的：** 从仓库根目录进入 JobsMockTool 的 macOS 构建流程。
 
@@ -458,7 +522,7 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 * 由构建器展示说明并等待回车，再准备环境；清理旧产物前须输入 `YES`，其它输入取消。
 * 构建成功后由构建器打开产物目录并启动 APP；构建失败则向外返回失败状态。
 
-### [build_macos.command](./build_macos.command/build_macos.command)
+### <span id="jobs-toc-heading-40" data-jobs-toc="v2">[build_macos.command](./build_macos.command/build_macos.command)</span><!-- jobs-toc:heading-end -->
 
 > **目的：** 在 macOS 本机生成 JobsMockTool APP 和拖拽安装 DMG。
 
@@ -468,9 +532,9 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 * 封装带 Applications 入口的 DMG，写入同一构建时间目录。
 * 更新第一层产物快捷方式，打开目录并启动新 APP；完整日志写入系统临时目录。
 
-## 十、Windows 打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-41" data-jobs-toc="v2">十、Windows 打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 10.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-42" data-jobs-toc="v2">10.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 必须在 Windows 上执行：
 
@@ -484,7 +548,7 @@ build_windows.bat
 dist\YYYY.MM.DD HH-mm-ss\JobsMockTool\JobsMockTool.exe
 ```
 
-### 10.2、为什么不是单文件 exe <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-43" data-jobs-toc="v2">10.2、为什么不是单文件 exe <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 本版本集成了 Qt WebEngine，用于显示顶部 3D Earth 页面。Qt WebEngine 依赖 Chromium 相关资源，强行打成单文件 exe 容易出现运行时资源缺失。
 
@@ -498,7 +562,7 @@ dist\YYYY.MM.DD HH-mm-ss\JobsMockTool\JobsMockTool.exe
 
 ---
 
-### [【Windows】📦生成exe.bat](./【Windows】📦生成exe.bat)
+### <span id="jobs-toc-heading-44" data-jobs-toc="v2">[【Windows】📦生成exe.bat](./【Windows】📦生成exe.bat)</span><!-- jobs-toc:heading-end -->
 
 > **目的：** 从仓库根目录进入 JobsMockTool 的 Windows 构建流程。
 
@@ -506,7 +570,7 @@ dist\YYYY.MM.DD HH-mm-ss\JobsMockTool\JobsMockTool.exe
 * 由构建器展示说明并确认，随后准备依赖、清理旧产物并生成 EXE 目录。
 * 构建器打开成品目录并启动 EXE，外层返回相同退出状态。
 
-### [build_windows.bat](./build_windows.bat)
+### <span id="jobs-toc-heading-45" data-jobs-toc="v2">[build_windows.bat](./build_windows.bat)</span><!-- jobs-toc:heading-end -->
 
 > **目的：** 在 Windows 本机生成包含 QtWebEngine 的 JobsMockTool EXE 分发目录。
 
@@ -515,7 +579,7 @@ dist\YYYY.MM.DD HH-mm-ss\JobsMockTool\JobsMockTool.exe
 * 清理旧 `build/`、`dist/` 和产物快捷方式，生成带完整运行库的 EXE 目录。
 * 核验 EXE、更新快捷方式，打开构建时间目录并启动程序；分发时保留整个目录。
 
-## 十一、依赖说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-46" data-jobs-toc="v2">十一、依赖说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 当前依赖：
 
@@ -535,9 +599,9 @@ pyinstaller>=6.0
 
 ---
 
-## 十二、常见问题 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-47" data-jobs-toc="v2">十二、常见问题 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-### 12.1、顶部 3D 地球不显示 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-48" data-jobs-toc="v2">12.1、顶部 3D 地球不显示 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 可能原因：
 
@@ -559,7 +623,7 @@ python app.py
 --collect-all PySide6
 ```
 
-### 12.2、端口启动失败 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-49" data-jobs-toc="v2">12.2、端口启动失败 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 说明端口被其他程序占用了。
 
@@ -569,7 +633,7 @@ python app.py
 - 关闭占用端口的程序。
 - 在“每个接口独立端口”模式下检查是否有端口重复。
 
-### 12.3、接口返回 404 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-50" data-jobs-toc="v2">12.3、接口返回 404 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 说明请求路径没有配置。
 
@@ -579,7 +643,7 @@ python app.py
 - API 路径是否一致。
 - 是否已经点击 `启动 / 重启本地服务`。
 
-### 12.4、接口返回 405 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-51" data-jobs-toc="v2">12.4、接口返回 405 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 说明路径存在，但请求方式不匹配。
 
@@ -595,7 +659,7 @@ POST /api/orders
 GET /api/orders
 ```
 
-### 12.5、条件响应没有命中 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+### <span id="jobs-toc-heading-52" data-jobs-toc="v2">12.5、条件响应没有命中 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 检查匹配条件 JSON。
 
@@ -617,7 +681,7 @@ GET /api/orders
 
 ---
 
-## 十三、风险说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-53" data-jobs-toc="v2">十三、风险说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 - `JobsMockTool` 只监听 `127.0.0.1`，默认只服务本机请求。
 - 不要把敏感 Token、真实密码、真实用户隐私数据写进 Mock 配置文件。
@@ -627,7 +691,7 @@ GET /api/orders
 
 ---
 
-## 十四、项目结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-54" data-jobs-toc="v2">十四、项目结构 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 ```text
 JobsMockTool/
@@ -655,7 +719,7 @@ JobsMockTool/
 
 ---
 
-## 十五、未执行声明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-55" data-jobs-toc="v2">十五、未执行声明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 当前仓库可以在本机执行构建脚本，但不同系统的安装包必须在对应系统上打包：
 
@@ -675,7 +739,7 @@ JobsMockTool/
 构建产物使用本机本地构建时间，格式为 `YYYY.MM.DD HH-mm-ss`（年月日时分秒），例如 `2020.06.04 12-23-21`。每次构建的 APP、DMG、EXE、ZIP 和配套文件统一保存到交付层 `./dist/YYYY.MM.DD HH-mm-ss/`，同次构建只取一次时间；第一层快捷方式指向本次时间目录，成功后打开该目录并启动其中的软件。旧产物沿用原有清理规则；历史产物缺少可靠构建时间时，不补写推测时间。
 
 
-## 十六、Mac Python 环境自检 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## <span id="jobs-toc-heading-56" data-jobs-toc="v2">十六、Mac Python 环境自检 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 实际使用 Python 的 Mac 入口通过脚本内部的具名函数执行环境自检，完整自检实现随该脚本携带。先阅读自述并确认，再自检 [**Homebrew**](https://brew.sh/)：已有安装执行 `brew update`，只更新自身和配方索引，不全量升级其它软件；缺少时安装并复检。安装路径精确输入 `YES` 选择系统标准目录，其它输入或回车选择用户目录；失败停止，不自动改换路线。新系统缺少 Command Line Tools 时按系统提示完成安装后重试。
 
