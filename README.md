@@ -450,6 +450,24 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 
 ---
 
+### [【MacOS】📦生成dmg.command](./【MacOS】📦生成dmg.command)
+
+> **目的：** 从仓库根目录进入 JobsMockTool 的 macOS 构建流程。
+
+* 按脚本位置找到同仓 `build_macos.command/build_macos.command`，原样转交参数。
+* 由构建器展示说明并等待回车，再准备环境；清理旧产物前须输入 `YES`，其它输入取消。
+* 构建成功后由构建器打开产物目录并启动 APP；构建失败则向外返回失败状态。
+
+### [build_macos.command](./build_macos.command/build_macos.command)
+
+> **目的：** 在 macOS 本机生成 JobsMockTool APP 和拖拽安装 DMG。
+
+* 阅读构建器内置说明并确认，准备 Homebrew、Python 和项目虚拟环境。
+  * 必需依赖缺失：回车安装，任意非空输入取消；失败停止。
+* 输入 `YES` 后清理本工具旧构建产物与 `dist/`，其它输入取消；继续生成包含 QtWebEngine 的 APP。
+* 封装带 Applications 入口的 DMG，写入同一构建时间目录。
+* 更新第一层产物快捷方式，打开目录并启动新 APP；完整日志写入系统临时目录。
+
 ## 十、Windows 打包 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 ### 10.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
@@ -479,6 +497,23 @@ dist\YYYY.MM.DD HH-mm-ss\JobsMockTool\JobsMockTool.exe
 分发时请把整个 `dist\YYYY.MM.DD HH-mm-ss\JobsMockTool` 文件夹一起发出去，不要只拷贝单独的 `JobsMockTool.exe`。
 
 ---
+
+### [【Windows】📦生成exe.bat](./【Windows】📦生成exe.bat)
+
+> **目的：** 从仓库根目录进入 JobsMockTool 的 Windows 构建流程。
+
+* 调用同仓 `build_windows.bat`，原样转交参数。
+* 由构建器展示说明并确认，随后准备依赖、清理旧产物并生成 EXE 目录。
+* 构建器打开成品目录并启动 EXE，外层返回相同退出状态。
+
+### [build_windows.bat](./build_windows.bat)
+
+> **目的：** 在 Windows 本机生成包含 QtWebEngine 的 JobsMockTool EXE 分发目录。
+
+* 阅读构建说明并回车，创建或复用本仓 `.venv/`。
+  * 依赖缺失：回车安装 `requirements.txt`，任意非空输入取消；复检失败停止。
+* 清理旧 `build/`、`dist/` 和产物快捷方式，生成带完整运行库的 EXE 目录。
+* 核验 EXE、更新快捷方式，打开构建时间目录并启动程序；分发时保留整个目录。
 
 ## 十一、依赖说明 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
@@ -640,10 +675,36 @@ JobsMockTool/
 构建产物使用本机本地构建时间，格式为 `YYYY.MM.DD HH-mm-ss`（年月日时分秒），例如 `2020.06.04 12-23-21`。每次构建的 APP、DMG、EXE、ZIP 和配套文件统一保存到交付层 `./dist/YYYY.MM.DD HH-mm-ss/`，同次构建只取一次时间；第一层快捷方式指向本次时间目录，成功后打开该目录并启动其中的软件。旧产物沿用原有清理规则；历史产物缺少可靠构建时间时，不补写推测时间。
 
 
-## 16、Mac Python 环境自检 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+## 十六、Mac Python 环境自检 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
 实际使用 Python 的 Mac 入口通过脚本内部的具名函数执行环境自检，完整自检实现随该脚本携带。先阅读自述并确认，再自检 [**Homebrew**](https://brew.sh/)：已有安装执行 `brew update`，只更新自身和配方索引，不全量升级其它软件；缺少时安装并复检。安装路径精确输入 `YES` 选择系统标准目录，其它输入或回车选择用户目录；失败停止，不自动改换路线。新系统缺少 Command Line Tools 时按系统提示完成安装后重试。
 
 [**Python**](https://www.python.org) 使用 Homebrew 配方；实际版本和标准库满足工具要求时复用，不兼容时才安装 / 升级并复检。必需修复直接回车执行，任意非空输入（含空格）、EOF 或非交互缺失环境均停止。旧虚拟环境不兼容时完整改名备份后重建，保留备份。Homebrew 安装路径选择、更新、Python 版本与健康检查均封装在实际执行脚本内部，不依赖外部环境支持库、同步脚本或父仓文件。Windows 入口保持原有平台环境流程；运行已打包成品无需准备构建环境。
+
+## 十七、<span id="repository-layout-and-entrypoints">本仓目录与脚本入口</span> <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
+
+以下为当前检出的源码与维护入口；依赖环境、Git 元数据、构建缓存和生成产物略去，独立子仓仅列目录。
+
+```text
+.
+├── .gitignore
+├── 【MacOS】📦生成dmg.command
+├── 【Windows】📦生成exe.bat
+├── app.py
+├── assets/
+├── build_macos.command/
+│   ├── build_macos.command
+│   └── README.md
+├── build_windows.bat
+├── examples/
+├── icon.png
+├── JobsMockTool.spec
+├── README.md
+├── requirements.txt
+└── scripts/
+    └── artifact_shortcuts.py
+```
+
+* `app.py` 保存界面、接口配置和本地 Mock 服务；`examples/` 保存请求 / 响应配置示例，`assets/` 保存界面素材，`scripts/` 保存成品快捷方式辅助代码。
 
 <a id="🔚" href="#前言" style="font-size:17px; color:green; font-weight:bold;">我是有底线的➤点我回到首页</a>
