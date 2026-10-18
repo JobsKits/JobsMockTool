@@ -408,11 +408,18 @@ python app.py
 
 ### 9.1、打包命令 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a>
 
-必须在 macOS 上执行：
+必须在 macOS 上执行。在项目目录双击 `【MacOS】📦生成dmg.command`，或从项目目录运行：
 
 ```shell
-chmod +x build_macos.sh
-./build_macos.sh
+./【MacOS】📦生成dmg.command
+```
+
+入口按脚本自身位置定位 `./build_macos.command/build_macos.command`，不依赖终端当前目录；项目可以放在不同用户名、中文或含空格的目录下。整个项目目录须保持完整，不能只把外层入口拷到桌面。
+
+旧入口若报 `run_builder:2: no such file or directory`，更新外层入口；也可直接双击 `build_macos.command` 文件夹内的同名脚本。终端直接运行内层构建器的命令为：
+
+```shell
+./build_macos.command/build_macos.command
 ```
 
 产物位置：
@@ -591,7 +598,10 @@ GET /api/orders
 JobsMockTool/
 ├── app.py
 ├── requirements.txt
-├── build_macos.sh
+├── 【MacOS】📦生成dmg.command
+├── build_macos.command/
+│   ├── build_macos.command
+│   └── README.md
 ├── build_windows.bat
 ├── README.md
 └── examples/
@@ -602,7 +612,8 @@ JobsMockTool/
 | --- | --- |
 | `app.py` | 主程序源码。 |
 | `requirements.txt` | Python 依赖。 |
-| `build_macos.sh` | macOS `.app` / `.dmg` 打包脚本。 |
+| `【MacOS】📦生成dmg.command` | macOS `.app` / `.dmg` 打包入口。 |
+| `build_macos.command/build_macos.command` | 内层 macOS 构建器，执行环境自检、构建和产物展示。 |
 | `build_windows.bat` | Windows `.exe` 打包脚本。 |
 | `README.md` | 全量说明文档。 |
 | `examples/sample_config_shared_port.json` | 多接口单端口示例配置。 |
