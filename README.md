@@ -13,7 +13,7 @@
   - [1.2、解决的问题](#jobs-toc-heading-4)
 - [二、功能总览](#jobs-toc-heading-5)
   - [2.1、基础功能](#jobs-toc-heading-6)
-  - [2.2、增强功能](#jobs-toc-heading-7)
+  - [2.2、多接口、响应与界面功能](#jobs-toc-heading-7)
 - [三、界面结构](#jobs-toc-heading-8)
   - [3.1、顶部区域](#jobs-toc-heading-9)
   - [3.2、配置请求的数据](#jobs-toc-heading-10)
@@ -74,29 +74,20 @@
 
 `JobsMockTool` 是一个基于 [**Python**](https://www.python.org) + [**PySide6**](https://doc.qt.io/qtforpython-6/) 的本地 Mock API 桌面工具。
 
-它不是一个只返回固定 JSON 的小脚本，而是一个面向前端、客户端、脚本调试、本地联调的轻量假后端工具：打开 App，配置接口、配置参数、配置假数据、启动本地服务，然后你的程序就可以直接请求本机返回的 Mock 数据。
+它面向前端、客户端和脚本的本地联调：配置接口、请求条件和假数据后，启动本机服务，调用方即可通过 HTTP 获取配置的响应。
 
-项目已经合并四类需求：
+| 功能 | 当前行为 |
+| --- | --- |
+| 接口配置 | 配置 HTTP 方法、API 路径、端口、响应头和参数说明；一个项目维护多个接口。 |
+| 服务模式 | 同一端口按路径区分接口，或每个接口使用独立端口；按钮负责启动 / 重启服务。 |
+| 条件响应 | 按 query、body、headers 匹配响应分支，每个分支独立设置状态码和数据。 |
+| 响应编辑 | 用树形结构编辑 JSON，支持模板导入 / 导出、实时预览和复制。 |
+| 请求测试 | 内置类似 [**Postman**](https://www.postman.com/) 的请求页，查看状态码、响应头和格式化响应体。 |
+| 配置保存 | 完整项目保存 / 加载为 JSON，便于重复联调和共享配置。 |
+| 界面 | 顶部显示本机时间、星期与人类可读位置；右侧嵌入可拖动 3D Earth，选项卡左对齐，编辑区随窗口伸缩，最低窗口 `1600 × 960`。 |
+| 分发 | macOS 生成 APP / DMG，Windows 生成 EXE；macOS 支持最小化后菜单栏驻留。 |
 
-- 第一类：原始基础需求。
-
-  包括图形化界面、HTTP 请求方式配置、API 路径配置、请求头、请求参数、可视化假数据结构、本地服务启动、内置 Postman 式请求测试、macOS `.dmg` 和 Windows `.exe` 打包。
-
-- 第二类：多接口与条件响应增强需求。
-
-  包括多接口配置、双服务模式、状态码配置、条件响应、Mock 配置保存 / 加载、JSON 模板导入 / 导出。
-
-- 第三类：`JobsMockTool` 品牌化与顶部 3D 展示区。
-
-  程序名称统一改为 `JobsMockTool`，顶部右侧集成可拖拽 3D Earth 展示区，加载地址为：
-
-  ```text
-  https://dragonir.github.io/3d/#/earth
-  ```
-
-- 第四类：界面细节与自适应修正。
-
-  程序界面不再显示版本号；顶部使用 `⏰` 和 `📌` 展示当前时间、星期和人类可读位置；选项卡强制左侧对齐；右上角 3D 展示区宽度缩小到上一版的 1/2，并保持右边界不变；请求页和配置页里的文本框改为随窗口尺寸自适应伸缩；主窗口增加最低宽高兜底，并扩大到 `1600 × 960`，保证最低尺寸下仍能显示完整功能界面，避免外层黑框裁切内部面板。
+3D 展示使用 `https://dragonir.github.io/3d/#/earth` 远程页面；位置识别需要网络。两者只作辅助展示，网络不可用时仍可使用本地 Mock 服务。具体接口、数据类型、条件示例、运行和打包入口见下文章节。
 
 ---
 
@@ -108,12 +99,12 @@
 
 典型流程：
 
-1. 打开 `JobsMockTool`。
-2. 在 `配置请求的数据` 选项卡里配置接口。
-3. 配置 HTTP 方法、API 路径、端口、响应头、参数说明、响应数据。
-4. 点击 `启动 / 重启本地服务`。
-5. 在前端、客户端、浏览器、脚本或内置请求测试页里请求本机接口。
-6. 接口返回你配置好的假数据。
+1、打开 `JobsMockTool`。
+2、在 `配置请求的数据` 选项卡里配置接口。
+3、配置 HTTP 方法、API 路径、端口、响应头、参数说明、响应数据。
+4、点击 `启动 / 重启本地服务`。
+5、在前端、客户端、浏览器、脚本或内置请求测试页里请求本机接口。
+6、接口返回你配置好的假数据。
 
 示例：
 
@@ -156,7 +147,7 @@ GET http://127.0.0.1:8765/api/users
 | 响应格式化 | 请求结果会自动格式化 JSON，方便人工阅读。 |
 | 跨平台打包 | 支持 Windows `.exe` 和 macOS `.app` / `.dmg` 打包脚本。 |
 
-### <span id="jobs-toc-heading-7" data-jobs-toc="v2">2.2、增强功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
+### <span id="jobs-toc-heading-7" data-jobs-toc="v2">2.2、多接口、响应与界面功能 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
 | 功能 | 说明 |
 | --- | --- |
@@ -169,9 +160,9 @@ GET http://127.0.0.1:8765/api/users
 | JSON 模板导出 | 可把当前树形响应导出为 JSON 文件。 |
 | 复制响应 JSON | 可一键复制当前响应 JSON。 |
 | 示例配置 | 内置 `examples/sample_config_shared_port.json`。 |
-| 3D 展示区 | 顶部右侧加载可拖拽 3D Earth 页面，宽度缩小到上一版的 1/2，右边界保持不变。 |
+| 3D 展示区 | 顶部右侧的独立区域加载可拖拽 3D Earth 页面。 |
 | 顶部时间位置 | 顶部左侧使用 `⏰` 显示本机当前时间和星期，使用 `📌` 显示自动识别的省市位置，不展示经纬度。 |
-| 自适应布局 | 请求页、配置页文本框和结果区随窗口尺寸变化，内部框体不再按固定高度写死。 |
+| 自适应布局 | 请求页、配置页文本框和结果区随窗口尺寸变化，保留最低可用高度。 |
 | 最小窗口兜底 | 主窗口设置最低宽高，防止向上压缩时外层黑框压住内部面板底部。 |
 | 顶部菜单栏驻留 | macOS 点击黄色最小化按钮后隐藏主窗口并驻留系统顶部菜单栏；点击图标可恢复，菜单可退出。 |
 
@@ -197,7 +188,7 @@ GET http://127.0.0.1:8765/api/users
 
 注意：该区域是远程 WebGL 页面。如果当前电脑不能联网，或者系统 WebView 禁止加载远程内容，该区域可能显示为空或加载失败；Mock Server 功能不受影响。位置识别依赖网络 IP 信息，只做辅助展示，不参与 Mock 服务逻辑。
 
-界面细节：顶部选项卡使用自定义左对齐栏，不再依赖系统默认 `QTabWidget` 的居中行为；主要文本区域交给布局系统联动，不再用固定高度硬撑。
+界面细节：顶部选项卡使用自定义左对齐栏；主要文本区域由布局系统联动，随窗口尺寸调整。
 
 ### <span id="jobs-toc-heading-10" data-jobs-toc="v2">3.2、配置请求的数据 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
@@ -245,9 +236,9 @@ GET http://127.0.0.1:8765/api/users
 - 拖动 App 外框变大时，内部编辑区同步扩展。
 - 拖动 App 外框变小时，内部区域会先压缩到最小可用高度。
 - 达到最低可用高度后，窗口不再继续变小；当前最低尺寸为 `1600 × 960`，目标是保证完整功能区可见。
-- 请求头、请求参数、请求结果三个区域不再使用过高的固定尺寸。
+- 请求头、请求参数、请求结果三个区域按可用空间分配高度。
 - 配置页的响应头、参数说明、响应预览也跟随窗口变化。
-- `匹配条件 JSON` 输入框改为固定可用高度，并给当前响应条件面板保留底部安全距离，避免和外层框线重合。
+- `匹配条件 JSON` 输入框使用固定可用高度，当前响应条件面板保留底部安全距离，避免和外层框线重合。
 
 ---
 
@@ -495,9 +486,9 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 
 ### <span id="jobs-toc-heading-37" data-jobs-toc="v2">9.2、安装方式 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
-1. 双击 `JobsMockTool-Installer.dmg`。
-2. 把 `JobsMockTool.app` 拖到 `Applications`。
-3. 以后从 Launchpad 或应用程序目录启动。
+1、双击 `JobsMockTool-Installer.dmg`。
+2、把 `JobsMockTool.app` 拖到 `Applications`。
+3、以后从 Launchpad 或应用程序目录启动。
 
 ### <span id="jobs-toc-heading-38" data-jobs-toc="v2">9.3、首次打开被拦截 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
@@ -505,10 +496,10 @@ dist/YYYY.MM.DD HH-mm-ss/JobsMockTool-Installer.dmg
 
 处理方式：
 
-1. 打开 `系统设置`。
-2. 进入 `隐私与安全性`。
-3. 找到 `JobsMockTool` 被拦截提示。
-4. 点击 `仍要打开`。
+1、打开 `系统设置`。
+2、进入 `隐私与安全性`。
+3、找到 `JobsMockTool` 被拦截提示。
+4、点击 `仍要打开`。
 
 正式分发时，需要 Apple Developer 签名和 notarization 公证。
 
@@ -737,7 +728,6 @@ JobsMockTool/
 第一层交付目录与平台打包脚本同层保存 `dist/`，以及最新 APP / DMG 的相对符号链接（Mac）或 EXE / 分发包的 `.lnk`（Windows）。双击快捷方式即可接触成品，真实文件保留在 `dist/`；成功构建自动更新入口，清理旧产物时移除对应旧入口。尚无成品时不生成无效快捷方式。
 
 构建产物使用本机本地构建时间，格式为 `YYYY.MM.DD HH-mm-ss`（年月日时分秒），例如 `2020.06.04 12-23-21`。每次构建的 APP、DMG、EXE、ZIP 和配套文件统一保存到交付层 `./dist/YYYY.MM.DD HH-mm-ss/`，同次构建只取一次时间；第一层快捷方式指向本次时间目录，成功后打开该目录并启动其中的软件。旧产物沿用原有清理规则；历史产物缺少可靠构建时间时，不补写推测时间。
-
 
 ## <span id="jobs-toc-heading-56" data-jobs-toc="v2">十六、Mac Python 环境自检 <a href="#前言" style="font-size:17px; color:green;"><b>🔼</b></a> <a href="#🔚" style="font-size:17px; color:green;"><b>🔽</b></a></span><!-- jobs-toc:heading-end -->
 
