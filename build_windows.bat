@@ -1,9 +1,9 @@
 @echo off
 chcp 65001 >nul
-setlocal
+setlocal DisableDelayedExpansion
 cd /d "%~dp0"
 
-call :show_notice
+call :show_notice || goto :error
 
 echo [JobsMockTool] Create / reuse virtual environment...
 python -m venv .venv
@@ -84,7 +84,8 @@ echo   - 生成的 exe 需要和 dist\YYYY.MM.DD HH-mm-ss\JobsMockTool 文件夹
 echo.
 echo 准备好后按回车开始；按 Ctrl+C 取消。
 echo.
-set /p __jobsmock_start=^>^>^> 按回车开始构建 JobsMockTool Windows 版：
+powershell -NoLogo -NoProfile -NonInteractive -Command "[Console]::Write('Press Enter to begin JobsMockTool build (EOF cancels): '); $answer = [Console]::In.ReadLine(); if ($null -eq $answer) { exit 1 }; exit 0"
+if errorlevel 1 exit /b 1
 echo.
 exit /b 0
 
