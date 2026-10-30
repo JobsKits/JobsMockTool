@@ -743,12 +743,14 @@ clean_build_outputs() {
 # 使用 PyInstaller 生成 macOS App Bundle。
 build_macos_app() {
   info_echo "开始构建 macOS App；QtWebEngine 体积较大，请耐心等待。"
+  mkdir -p "${BUILD_DIR}/pyinstaller-spec" || return 1
   run_logged "$VENV_DIR/bin/python" -m PyInstaller \
     --noconfirm \
     --clean \
     --windowed \
     --onedir \
     --distpath "$DIST_DIR" \
+    --specpath "${BUILD_DIR}/pyinstaller-spec" \
     --name "JobsMockTool" \
     --osx-bundle-identifier "com.jobs.mocktool" \
     --add-data "${PROJECT_ROOT}/icon.png:." \

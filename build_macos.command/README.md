@@ -33,6 +33,8 @@
 
 `build_macos.command` 将上级 `JobsMockTool` 源码打包为本机 [**macOS**](https://www.apple.com/macos/) APP 和拖拽安装 DMG。入口固定使用上级 `app.py`、`requirements.txt`、`icon.png` 和 `scripts/artifact_shortcuts.py`，适合在修改源码后生成可分发桌面程序。完整应用功能见 [JobsMockTool 总说明](../README.md)。
 
+所有工程输入按脚本位置定位，生成的临时 PyInstaller 配置放在上级 `build/pyinstaller-spec/`，不会改写可随工程搬迁的源码配置 [JobsMockTool.spec](../JobsMockTool.spec)。App 图标随包携带，不依赖开发机源码目录。
+
 | 功能 | 输入、输出与默认行为 |
 | --- | --- |
 | 环境准备 | 内置自检 [**Homebrew**](https://brew.sh/) 和 [**Python**](https://www.python.org/) 3.11+，默认使用 `python@3.13`；复用上级 `../.venv/`。 |

@@ -1,6 +1,8 @@
 @echo off
 chcp 65001 >nul
 setlocal DisableDelayedExpansion
+set "PYTHONUTF8=1"
+set "PYTHONIOENCODING=utf-8"
 cd /d "%~dp0"
 
 call :show_notice || goto :error
@@ -34,7 +36,9 @@ echo Build time (YYYY.MM.DD HH-mm-ss): %BUILD_STAMP%
 
 echo [JobsMockTool] Build Windows executable folder...
 echo QtWebEngine is large. The generated exe must stay with the "%DIST_DIR%\JobsMockTool" folder.
-pyinstaller --noconfirm --clean --distpath "%DIST_DIR%" --windowed --onedir --name "JobsMockTool" --collect-all PySide6 app.py
+if not exist "build\pyinstaller-spec" mkdir "build\pyinstaller-spec"
+if not exist "build\pyinstaller-spec" goto :error
+pyinstaller --noconfirm --clean --specpath "build\pyinstaller-spec" --distpath "%DIST_DIR%" --windowed --onedir --name "JobsMockTool" --collect-all PySide6 app.py
 if errorlevel 1 goto :error
 
 echo.

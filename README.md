@@ -80,6 +80,10 @@
 
 成品已包含 [**Python**](https://www.python.org) 与图形依赖，运行成品无需另外安装 Python；源码运行和打包才需要开发依赖。EXE 架构随构建所用 Python 和依赖 wheel 决定，x86 / ARM64 尚无统一交付验收；Windows 原生界面与分发仍须在对应目标机验证。
 
+工程可以整体复制或改名；[构建配置](./JobsMockTool.spec) 按自身目录定位 `app.py` 与 `icon.png`。图标随 App 打包，运行时读取包内资源，分享成品不依赖开发机源码路径；目标 Mac 的系统、架构及实际启动仍须分别验证。
+
+两端构建器生成的临时 PyInstaller 配置放在 `build/pyinstaller-spec/`，不会覆盖随源码维护的 `.spec` 配置。
+
 [依赖配置](./requirements.txt)要求 `PySide6>=6.7`、`PyInstaller>=6.0`；构建脚本使用 PATH 中的 Python，未声明固定最低 Python 版本，实际还受所选依赖约束。Windows 包含 [**Qt WebEngine**](https://doc.qt.io/qt-6/qtwebengine-index.html)，采用 `onedir` 分发，必须保留完整目录，不能只拷 EXE。
 
 它面向前端、客户端和脚本的本地联调：配置接口、请求条件和假数据后，启动本机服务，调用方即可通过 HTTP 获取配置的响应。

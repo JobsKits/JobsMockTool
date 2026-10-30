@@ -3,17 +3,18 @@ from pathlib import Path
 
 from PyInstaller.utils.hooks import collect_all
 
+project_root = Path(SPECPATH).resolve()
 datas = []
 binaries = []
 hiddenimports = []
 tmp_ret = collect_all('PySide6')
 datas += tmp_ret[0]; binaries += tmp_ret[1]; hiddenimports += tmp_ret[2]
-datas.append((str(Path(SPECPATH).resolve() / 'icon.png'), '.'))
+datas.append((str(project_root / 'icon.png'), '.'))
 
 
 a = Analysis(
-    ['/Users/jobs/Documents/Github/JobsGenesis/JobsPythonTools.py/JobsMockTool.py/app.py'],
-    pathex=[],
+    [str(project_root / 'app.py')],
+    pathex=[str(project_root)],
     binaries=binaries,
     datas=datas,
     hiddenimports=hiddenimports,
